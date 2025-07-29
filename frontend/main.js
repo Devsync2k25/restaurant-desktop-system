@@ -19,8 +19,7 @@ function createWindow() {
   const isDev = !app.isPackaged;
 
   if (isDev) {
-    // 
-    Load Vite dev server during development
+    //  Load Vite dev server during development
     win.loadURL('http://localhost:5173');
     win.webContents.openDevTools(); // Optional: show DevTools in dev mode
   } else {

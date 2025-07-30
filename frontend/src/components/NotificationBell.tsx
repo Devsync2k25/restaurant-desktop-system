@@ -55,12 +55,12 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
 
       {/* Notification Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border z-50">
+        <div className="absolute right-0 mt-2 w-[500px] bg-white rounded-lg shadow-xl border z-50">
           <div className="p-4 border-b">
             <h3 className="text-lg font-semibold text-gray-800">Kitchen/Bar Orders</h3>
           </div>
           
-          <div className="max-h-96 overflow-y-auto">
+          <div className="max-h-[600px] overflow-y-auto">
             {notifications.length === 0 ? (
               <div className="p-4 text-center text-gray-500">
                 No notifications
@@ -69,20 +69,25 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
               <div className="divide-y">
                 {/* New Notifications */}
                 {newNotifications.map(notification => (
-                  <div key={notification.id} className="p-4 bg-blue-50 border-l-4 border-blue-500">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-blue-900">New Order: {notification.recipeName}</h4>
-                        <p className="text-sm text-blue-700">
-                          Quantity: {notification.quantity} | Ordered by: {notification.orderedBy}
-                        </p>
-                        <p className="text-xs text-blue-600 mt-1">
-                          {notification.timestamp.toLocaleTimeString()}
-                        </p>
+                  <div key={notification.id} className="p-6 bg-blue-50 border-l-4 border-blue-500">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1 pr-4">
+                        <h4 className="font-semibold text-blue-900 text-lg mb-2">New Order: {notification.recipeName}</h4>
+                        <div className="space-y-1">
+                          <p className="text-sm text-blue-700">
+                            <span className="font-medium">Quantity:</span> {notification.quantity}
+                          </p>
+                          <p className="text-sm text-blue-700">
+                            <span className="font-medium">Ordered by:</span> {notification.orderedBy}
+                          </p>
+                          <p className="text-xs text-blue-600">
+                            <span className="font-medium">Time:</span> {notification.timestamp.toLocaleTimeString()}
+                          </p>
+                        </div>
                       </div>
                       <button
                         onClick={() => onAcknowledge(notification.id)}
-                        className="ml-2 px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700"
+                        className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 flex-shrink-0 font-medium"
                       >
                         Acknowledge
                       </button>
@@ -92,20 +97,25 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
 
                 {/* Acknowledged Notifications */}
                 {pendingNotifications.map(notification => (
-                  <div key={notification.id} className="p-4 bg-yellow-50 border-l-4 border-yellow-500">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-yellow-900">Pending: {notification.recipeName}</h4>
-                        <p className="text-sm text-yellow-700">
-                          Quantity: {notification.quantity} | Ordered by: {notification.orderedBy}
-                        </p>
-                        <p className="text-xs text-yellow-600 mt-1">
-                          {notification.timestamp.toLocaleTimeString()}
-                        </p>
+                  <div key={notification.id} className="p-6 bg-yellow-50 border-l-4 border-yellow-500">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1 pr-4">
+                        <h4 className="font-semibold text-yellow-900 text-lg mb-2">Pending: {notification.recipeName}</h4>
+                        <div className="space-y-1">
+                          <p className="text-sm text-yellow-700">
+                            <span className="font-medium">Quantity:</span> {notification.quantity}
+                          </p>
+                          <p className="text-sm text-yellow-700">
+                            <span className="font-medium">Ordered by:</span> {notification.orderedBy}
+                          </p>
+                          <p className="text-xs text-yellow-600">
+                            <span className="font-medium">Time:</span> {notification.timestamp.toLocaleTimeString()}
+                          </p>
+                        </div>
                       </div>
                       <button
                         onClick={() => onComplete(notification.id)}
-                        className="ml-2 px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700"
+                        className="px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 flex-shrink-0 font-medium"
                       >
                         Complete
                       </button>
@@ -118,15 +128,20 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
                   .filter(n => n.status === 'completed')
                   .slice(-5)
                   .map(notification => (
-                    <div key={notification.id} className="p-4 bg-gray-50 border-l-4 border-gray-400">
+                    <div key={notification.id} className="p-6 bg-gray-50 border-l-4 border-gray-400">
                       <div className="flex-1">
-                        <h4 className="font-semibold text-gray-700">Completed: {notification.recipeName}</h4>
-                        <p className="text-sm text-gray-600">
-                          Quantity: {notification.quantity} | Ordered by: {notification.orderedBy}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {notification.timestamp.toLocaleTimeString()}
-                        </p>
+                        <h4 className="font-semibold text-gray-700 text-lg mb-2">Completed: {notification.recipeName}</h4>
+                        <div className="space-y-1">
+                          <p className="text-sm text-gray-600">
+                            <span className="font-medium">Quantity:</span> {notification.quantity}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            <span className="font-medium">Ordered by:</span> {notification.orderedBy}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            <span className="font-medium">Time:</span> {notification.timestamp.toLocaleTimeString()}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   ))}

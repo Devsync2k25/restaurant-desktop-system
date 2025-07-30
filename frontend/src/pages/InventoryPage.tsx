@@ -1,4 +1,5 @@
 
+import React, { useState } from 'react';
 import AlertCard from '../components/AlertCard';
 import InventoryTable from '../components/InventoryTable';
 import MenuTable from '../components/MenuTable';
@@ -23,8 +24,18 @@ const InventoryPage = ({
   handleAddRecipe,
   handleEditRecipe,
   handleAddGoodsIssuance,
-  handleAddDailyUsage
+  handleAddDailyUsage,
+  restockRequests,
+  handleRequestRestock
 }: any) => {
+  const [showRestockModal, setShowRestockModal] = useState(false);
+  const [restockForm, setRestockForm] = useState({
+    item: '',
+    quantity: '',
+    urgency: 'low_stock',
+    notes: ''
+  });
+
   return (
     <>
       <div className="flex items-center justify-between mb-6">
@@ -155,6 +166,17 @@ const InventoryPage = ({
             <div className="bg-white rounded-lg shadow p-6">
               <h3 className="text-lg font-semibold text-blue-900 mb-2">Low Stock</h3>
               <div className="text-2xl font-bold text-red-600">{lowStockItems.length}</div>
+              {lowStockItems.length > 0 && (
+                <button
+                  onClick={() => {
+                    setShowRestockModal(true);
+                    setRestockForm({ item: '', quantity: '', urgency: 'low_stock', notes: '' });
+                  }}
+                  className="mt-2 px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
+                >
+                  Request Restock
+                </button>
+              )}
             </div>
             <div className="bg-white rounded-lg shadow p-6">
               <h3 className="text-lg font-semibold text-blue-900 mb-2">Today's Issuance</h3>
@@ -376,6 +398,109 @@ const InventoryPage = ({
             </div>
           </div>
         </>
+      )}
+
+      {/* Restock Request Modal */}
+      {showRestockModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-xl shadow-xl w-full max-w-md relative">
+            <button 
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl"
+              onClick={() => setShowRestockModal(false)}
+            >
+              ×
+            </button>
+            <h2 className="text-xl font-bold text-blue-900 mb-4">Request Restock</h2>
+            
+            <div className="mb-4">
+              <label className="block font-semibold text-gray-700 mb-2">Item Name</label>
+              <input
+                type="text"
+                className="w-full border rounded px-3 py-2"
+                placeholder="Enter item name"
+                value={restockForm.item}
+                onChange={(e) => setRestockForm({ ...restockForm, item: e.target.value })}
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block font-semibold text-gray-700 mb-2">Requested Quantity</label>
+              <input
+                type="number"
+                min="1"
+                className="w-full border rounded px-3 py-2"
+                placeholder="Enter quantity to request"
+                value={restockForm.quantity}
+                onChange={(e) => setRestockForm({ ...restockForm, quantity: e.target.value })}
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block font-semibold text-gray-700 mb-2">Urgency</label>
+              <div className="space-y-2">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="urgency"
+                    value="low_stock"
+                    checked={restockForm.urgency === 'low_stock'}
+                    onChange={(e) => setRestockForm({ ...restockForm, urgency: e.target.value })}
+                    className="mr-2"
+                  />
+                  <span className="text-sm">Low Stock</span>
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="urgency"
+                    value="finished"
+                    checked={restockForm.urgency === 'finished'}
+                    onChange={(e) => setRestockForm({ ...restockForm, urgency: e.target.value })}
+                    className="mr-2"
+                  />
+                  <span className="text-sm text-red-600 font-medium">Finished (Out of Stock)</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <label className="block font-semibold text-gray-700 mb-2">Notes (Optional)</label>
+              <textarea
+                className="w-full border rounded px-3 py-2 h-20 resize-none"
+                placeholder="Add any additional notes for the manager..."
+                value={restockForm.notes}
+                onChange={(e) => setRestockForm({ ...restockForm, notes: e.target.value })}
+              />
+            </div>
+
+            <div className="flex justify-end gap-3">
+              <button
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                onClick={() => setShowRestockModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                onClick={() => {
+                  if (restockForm.item && restockForm.quantity && parseInt(restockForm.quantity) > 0) {
+                    handleRequestRestock({
+                      item: restockForm.item,
+                      stock: '0',
+                      unit: '',
+                      requestedQuantity: parseInt(restockForm.quantity),
+                      urgency: restockForm.urgency,
+                      notes: restockForm.notes
+                    });
+                    setShowRestockModal(false);
+                  }
+                }}
+              >
+                Submit Request
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

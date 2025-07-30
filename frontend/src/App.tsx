@@ -243,7 +243,9 @@ const App = () => {
       {
         id: Date.now().toString(),
         item: item.item,
-        quantity: item.stock,
+        quantity: item.requestedQuantity || item.stock,
+        urgency: item.urgency || 'low_stock',
+        notes: item.notes || '',
         requestedBy: currentUser.name,
         date: new Date().toISOString().slice(0, 10),
         status: 'requested',
@@ -720,6 +722,38 @@ const App = () => {
     );
   };
 
+  // Handler for Warehouse/Stores managers to approve orders from Chef/Bartender
+  const handleApproveOrder = (notificationId: string) => {
+    setOrderNotifications(prev => 
+      prev.map(notification => 
+        notification.id === notificationId 
+          ? { 
+              ...notification, 
+              status: 'acknowledged' as const,
+              approvedBy: currentUser.name,
+              approvedAt: new Date()
+            }
+          : notification
+      )
+    );
+  };
+
+  // Handler for Warehouse/Stores managers to complete orders
+  const handleCompleteOrder = (notificationId: string) => {
+    setOrderNotifications(prev => 
+      prev.map(notification => 
+        notification.id === notificationId 
+          ? { 
+              ...notification, 
+              status: 'completed' as const,
+              completedBy: currentUser.name,
+              completedAt: new Date()
+            }
+          : notification
+      )
+    );
+  };
+
 
 
   // Login form state
@@ -927,9 +961,6 @@ const App = () => {
         navItems={navItems}
         uploadedLogo={uploadedLogo}
         settingsLogo={settings.logo}
-        orderNotifications={orderNotifications}
-        onAcknowledgeNotification={handleAcknowledgeNotification}
-        onCompleteNotification={handleCompleteNotification}
       />
       <main className="ml-60 p-8 overflow-y-scroll h-screen bg-blue-50 text-black">
         {activePage === 'Dashboard' ? (
@@ -975,6 +1006,9 @@ const App = () => {
               setActivePage={setActivePage}
               restockRequests={restockRequests}
               handleRequestRestock={handleRequestRestock}
+              orderNotifications={orderNotifications}
+              handleApproveOrder={handleApproveOrder}
+              handleCompleteOrder={handleCompleteOrder}
             />
           ) : currentUser.role === ROLES.STORES_MANAGER ? (
             <StoresManagerPage
@@ -983,6 +1017,9 @@ const App = () => {
               lowStockItems={lowStockItems}
               goodsIssuance={goodsIssuance}
               setActivePage={setActivePage}
+              orderNotifications={orderNotifications}
+              handleApproveOrder={handleApproveOrder}
+              handleCompleteOrder={handleCompleteOrder}
             />
           ) : currentUser.role === ROLES.INVENTORY_PERSONNEL ? (
             <InventoryPersonnelPage
@@ -1017,6 +1054,7 @@ const App = () => {
             wasteLog={wasteLog}
             inventoryItems={inventoryItems}
             recipes={recipes}
+            restockRequests={restockRequests}
           />
         ) : activePage === 'Analytics' ? (
           <AnalyticsPage
@@ -1153,6 +1191,8 @@ const App = () => {
               handleEditRecipe={handleEditRecipe}
               handleAddGoodsIssuance={handleAddGoodsIssuance}
               handleAddDailyUsage={handleAddDailyUsage}
+              restockRequests={restockRequests}
+              handleRequestRestock={handleRequestRestock}
             />
         )}
         {/* Modals (placeholders) for non-analytics actions */}

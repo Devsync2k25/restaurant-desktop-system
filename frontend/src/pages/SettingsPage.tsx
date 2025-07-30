@@ -26,33 +26,6 @@ const SettingsPage = ({
           <label className="block font-semibold mb-1">Restaurant Name</label>
           <input type="text" className="w-full border rounded px-3 py-2" value={settings.restaurantName} onChange={e => handleSettingsChange('restaurantName', e.target.value)} />
         </div>
-        <div>
-          <label className="block font-semibold mb-1">Logo (URL or Upload)</label>
-          <input
-            type="text"
-            className="w-full border rounded px-3 py-2 mb-2"
-            placeholder="Paste image URL or leave blank"
-            value={settings.logo}
-            onChange={e => handleSettingsChange('logo', e.target.value)}
-          />
-          <input
-            type="file"
-            accept="image/*"
-            className="w-full border rounded px-3 py-2 mb-2"
-            onChange={handleLogoUpload}
-          />
-          {(uploadedLogo || settings.logo) && (
-            <div className="mt-2 flex items-center gap-2">
-              <img
-                src={uploadedLogo || settings.logo}
-                alt="Logo Preview"
-                className="h-10 w-auto object-contain rounded border"
-                style={{ maxHeight: 40 }}
-              />
-              <span className="text-gray-500 text-xs">Preview</span>
-            </div>
-          )}
-        </div>
         <div className="flex gap-4">
           <div className="flex-1">
             <label className="block font-semibold mb-1">Contact Email</label>

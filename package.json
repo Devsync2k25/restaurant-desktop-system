@@ -1,0 +1,26 @@
+{
+  "name": "restaurant-desktop-system",
+  "version": "1.0.0",
+  "description": "Restaurant Desktop System with Electron",
+  "main": "frontend/main.js",
+  "scripts": {
+    "dev": "cd frontend && npm run dev",
+    "electron": "cd frontend && npm run electron",
+    "start": "concurrently \"cd frontend && npm run dev\" \"wait-on http://localhost:5173 && cd frontend && npm run electron\"",
+    "install-deps": "cd frontend && npm install",
+    "build": "cd frontend && npm run build",
+    "preview": "cd frontend && npm run preview"
+  },
+  "keywords": [
+    "restaurant",
+    "electron",
+    "desktop",
+    "inventory"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "wait-on": "^8.0.4"
+  }
+}

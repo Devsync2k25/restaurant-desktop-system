@@ -7,12 +7,16 @@ const ReportsPage = ({
   orderNotifications,
   goodsIssuance,
   wasteLog,
-  inventoryItems
+  inventoryItems,
+  restockRequests
 }: any) => {
   
   // Generate comprehensive worker activity report
   const generateWorkerActivityReport = () => {
     const activities: any[] = [];
+    
+    // Debug: Check if restockRequests are being passed
+    console.log('Restock Requests in ReportsPage:', restockRequests);
     
     // Add order notifications with approval/completion tracking
     orderNotifications.forEach((notification: any) => {
@@ -84,11 +88,40 @@ const ReportsPage = ({
       }
     });
     
+    // Add restock request activities
+    console.log('Processing restock requests:', restockRequests.length);
+    restockRequests.forEach((request: any) => {
+      console.log('Processing restock request:', request);
+      activities.push({
+        Date: request.date || new Date().toLocaleDateString(),
+        Time: 'N/A',
+        Activity: 'Restock Request',
+        Worker: request.requestedBy || 'Unknown',
+        Details: `${request.item || 'Unknown Item'} - Qty: ${request.quantity || 'Unknown'} - Urgency: ${request.urgency === 'low_stock' ? 'Low Stock' : request.urgency === 'finished' ? 'Finished' : 'Unknown'}${request.notes ? ` - Notes: ${request.notes}` : ''}`,
+        OrderID: request.id || 'N/A',
+        Status: request.status || 'Unknown',
+        ApprovedBy: request.status === 'approved' ? 'Manager' : request.status === 'rejected' ? 'Manager (Rejected)' : 'Pending',
+        ApprovedAt: request.status === 'approved' ? 'Approved for Purchase' : request.status === 'rejected' ? 'Rejected' : 'Pending',
+        CompletedBy: 'N/A',
+        CompletedAt: 'N/A'
+      });
+    });
+    
     // Sort by date (most recent first)
-    return activities.sort((a, b) => new Date(b.Date).getTime() - new Date(a.Date).getTime());
+    const sortedActivities = activities.sort((a, b) => new Date(b.Date).getTime() - new Date(a.Date).getTime());
+    console.log('Final activities count:', sortedActivities.length);
+    console.log('Restock activities count:', sortedActivities.filter(a => a.Activity === 'Restock Request').length);
+    return sortedActivities;
   };
 
+  // Generate activities for display
   const workerActivities = generateWorkerActivityReport();
+
+  // Handle download with fresh data
+  const handleDownload = () => {
+    const freshActivities = generateWorkerActivityReport();
+    downloadReport(freshActivities, 'worker-activity-report');
+  };
 
   return (
     <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-md p-8">
@@ -115,7 +148,7 @@ const ReportsPage = ({
             </select>
           </div>
           <button
-            onClick={() => downloadReport(workerActivities, 'worker-activity-report')}
+            onClick={handleDownload}
             className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center"
           >
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -123,10 +156,11 @@ const ReportsPage = ({
             </svg>
             Download
           </button>
+
         </div>
         
         {/* Activity Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
           <div className="bg-blue-50 p-4 rounded-lg">
             <h3 className="font-semibold text-blue-900">Total Activities</h3>
             <p className="text-2xl font-bold text-blue-600">{workerActivities.length}</p>
@@ -147,6 +181,12 @@ const ReportsPage = ({
             <h3 className="font-semibold text-purple-900">Completed Orders</h3>
             <p className="text-2xl font-bold text-purple-600">
               {workerActivities.filter(a => a.CompletedBy !== 'Pending').length}
+            </p>
+          </div>
+          <div className="bg-orange-50 p-4 rounded-lg">
+            <h3 className="font-semibold text-orange-900">Restock Requests</h3>
+            <p className="text-2xl font-bold text-orange-600">
+              {workerActivities.filter(a => a.Activity === 'Restock Request').length}
             </p>
           </div>
         </div>

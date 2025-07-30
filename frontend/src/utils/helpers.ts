@@ -17,6 +17,9 @@ export function getWeekDates(startDate: string) {
 
 // Enhanced download function with multiple formats
 export function downloadReport(data: any[], filename: string, format: 'csv' | 'json' | 'txt' | 'pdf') {
+  console.log('Download Report - Data received:', data);
+  console.log('Download Report - Restock requests in data:', data.filter(a => a.Activity === 'Restock Request'));
+  
   let content = '';
   let mimeType = '';
   let extension = '';
@@ -96,17 +99,17 @@ function generatePDF(data: any[], filename: string) {
       fillColor: [248, 250, 252], // Light gray
     },
     columnStyles: {
-      0: { cellWidth: 25 }, // Date
-      1: { cellWidth: 20 }, // Time
-      2: { cellWidth: 30 }, // Activity
-      3: { cellWidth: 25 }, // Worker
-      4: { cellWidth: 40 }, // Details
-      5: { cellWidth: 25 }, // OrderID
-      6: { cellWidth: 20 }, // Status
-      7: { cellWidth: 25 }, // ApprovedBy
-      8: { cellWidth: 30 }, // ApprovedAt
-      9: { cellWidth: 25 }, // CompletedBy
-      10: { cellWidth: 30 }, // CompletedAt
+      0: { cellWidth: 20 }, // Date
+      1: { cellWidth: 15 }, // Time
+      2: { cellWidth: 25 }, // Activity
+      3: { cellWidth: 20 }, // Worker
+      4: { cellWidth: 35 }, // Details
+      5: { cellWidth: 20 }, // OrderID
+      6: { cellWidth: 15 }, // Status
+      7: { cellWidth: 20 }, // ApprovedBy
+      8: { cellWidth: 25 }, // ApprovedAt
+      9: { cellWidth: 20 }, // CompletedBy
+      10: { cellWidth: 25 }, // CompletedAt
     },
     margin: { top: 40 },
   });
@@ -114,6 +117,7 @@ function generatePDF(data: any[], filename: string) {
   // Add summary at the end
   const totalActivities = data.length;
   const ordersPlaced = data.filter(a => a.Activity === 'Order Placed').length;
+  const restockRequests = data.filter(a => a.Activity === 'Restock Request').length;
   const pendingApprovals = data.filter(a => a.ApprovedBy === 'Pending').length;
   const completedOrders = data.filter(a => a.CompletedBy !== 'Pending').length;
   
@@ -124,8 +128,9 @@ function generatePDF(data: any[], filename: string) {
   doc.setFontSize(10);
   doc.text(`Total Activities: ${totalActivities}`, 14, finalY + 8);
   doc.text(`Orders Placed: ${ordersPlaced}`, 14, finalY + 16);
-  doc.text(`Pending Approvals: ${pendingApprovals}`, 14, finalY + 24);
-  doc.text(`Completed Orders: ${completedOrders}`, 14, finalY + 32);
+  doc.text(`Restock Requests: ${restockRequests}`, 14, finalY + 24);
+  doc.text(`Pending Approvals: ${pendingApprovals}`, 14, finalY + 32);
+  doc.text(`Completed Orders: ${completedOrders}`, 14, finalY + 40);
   
   // Save the PDF
   doc.save(`${filename}.pdf`);

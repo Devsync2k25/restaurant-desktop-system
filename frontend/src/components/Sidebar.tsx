@@ -1,5 +1,4 @@
 import React from 'react';
-import NotificationBell from './NotificationBell';
 
 interface NavItem {
   name: string;
@@ -15,9 +14,6 @@ interface SidebarProps {
   navItems: NavItem[];
   uploadedLogo?: string | null;
   settingsLogo?: string;
-  orderNotifications?: any[];
-  onAcknowledgeNotification?: (id: string) => void;
-  onCompleteNotification?: (id: string) => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ 
@@ -27,10 +23,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   handleLogout, 
   navItems,
   uploadedLogo,
-  settingsLogo,
-  orderNotifications = [],
-  onAcknowledgeNotification = () => {},
-  onCompleteNotification = () => {}
+  settingsLogo
 }) => {
   return (
     <aside className="fixed top-0 left-0 h-full w-60 bg-slate-900 text-white flex flex-col py-8 px-4 z-20">
@@ -38,16 +31,6 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div className="text-sm text-gray-400 mb-4 pl-2">
         Welcome, {currentUser.name}
         <div className="text-xs text-gray-500 mt-1">{currentUser.role}</div>
-        {['Warehouse Manager', 'Stores Manager'].includes(currentUser.role) && (
-          <div className="mt-2">
-            <NotificationBell
-              notifications={orderNotifications}
-              onAcknowledge={onAcknowledgeNotification}
-              onComplete={onCompleteNotification}
-              currentUserRole={currentUser.role}
-            />
-          </div>
-        )}
       </div>
       <nav className="flex-1 flex flex-col gap-1">
         {navItems.map((item) => (

@@ -1,3 +1,121 @@
+/**
+ * RESTAURANT MANAGEMENT SYSTEM - FRONTEND APPLICATION
+ * ===================================================
+ * 
+ * BACKEND DEVELOPERS - READ THIS SECTION:
+ * ======================================
+ * 
+ * API ENDPOINTS EXPECTED:
+ * ----------------------
+ * 1. Authentication:
+ *    - POST /api/login
+ *      Body: { username: string, password: string }
+ *      Response: { user: UserObject, token: string }
+ * 
+ * 2. Inventory Management:
+ *    - GET /api/inventory - Get all inventory items
+ *    - POST /api/inventory - Add new inventory item
+ *    - PUT /api/inventory/:id - Update inventory item
+ *    - DELETE /api/inventory/:id - Delete inventory item
+ * 
+ * 3. User Management:
+ *    - GET /api/users - Get all users (admin only)
+ *    - POST /api/users - Create new user
+ *    - PUT /api/users/:id - Update user
+ *    - DELETE /api/users/:id - Delete user
+ * 
+ * 4. Recipes:
+ *    - GET /api/recipes - Get all recipes
+ *    - POST /api/recipes - Add new recipe
+ *    - PUT /api/recipes/:id - Update recipe
+ *    - DELETE /api/recipes/:id - Delete recipe
+ * 
+ * 5. Reports & Analytics:
+ *    - GET /api/reports/inventory - Inventory reports
+ *    - GET /api/reports/sales - Sales reports
+ *    - GET /api/analytics - Analytics data
+ * 
+ * DATABASE DEVELOPERS - READ THIS SECTION:
+ * =======================================
+ * 
+ * REQUIRED DATABASE TABLES:
+ * ------------------------
+ * 1. users:
+ *    - id (PRIMARY KEY)
+ *    - username (UNIQUE)
+ *    - password (HASHED)
+ *    - role (ENUM: Director, Manager, MIS Officer, etc.)
+ *    - name
+ *    - created_at
+ *    - updated_at
+ * 
+ * 2. inventory:
+ *    - id (PRIMARY KEY)
+ *    - product_name
+ *    - unit
+ *    - cost_price (DECIMAL)
+ *    - current_stock (DECIMAL)
+ *    - reorder_level (DECIMAL)
+ *    - created_at
+ *    - updated_at
+ * 
+ * 3. recipes:
+ *    - id (PRIMARY KEY)
+ *    - name
+ *    - ingredients (JSON)
+ *    - instructions (TEXT)
+ *    - created_at
+ *    - updated_at
+ * 
+ * 4. sales:
+ *    - id (PRIMARY KEY)
+ *    - product_id (FOREIGN KEY)
+ *    - quantity
+ *    - price
+ *    - date
+ *    - created_at
+ * 
+ * 5. waste:
+ *    - id (PRIMARY KEY)
+ *    - product_id (FOREIGN KEY)
+ *    - quantity
+ *    - reason
+ *    - date
+ *    - created_at
+ * 
+ * DATA FLOW:
+ * ==========
+ * 1. User Authentication:
+ *    - Frontend sends credentials to /api/login
+ *    - Backend validates against users table
+ *    - Returns JWT token for session management
+ * 
+ * 2. Role-Based Access:
+ *    - Frontend checks user role from JWT token
+ *    - Shows/hides components based on role permissions
+ *    - Backend validates role for protected endpoints
+ * 
+ * 3. Real-Time Updates:
+ *    - Frontend uses WebSocket connections for live data
+ *    - Backend pushes updates when inventory changes
+ *    - Database triggers can notify backend of changes
+ * 
+ * CURRENT MOCK DATA STRUCTURE:
+ * ===========================
+ * - MOCK_USERS: Array of user objects with role-based access
+ * - ROLES: Enum defining all user roles and permissions
+ * - All data currently stored in frontend state (needs backend migration)
+ * 
+ * INTEGRATION NOTES:
+ * =================
+ * - Replace all mock data with API calls
+ * - Implement proper error handling for API failures
+ * - Add loading states for async operations
+ * - Implement proper form validation
+ * - Add pagination for large datasets
+ * - Implement search and filtering on backend
+ */
+
 import React, { useState } from 'react';
 import {
   Chart as ChartJS,
@@ -37,7 +155,8 @@ import BartenderPage from './pages/BartenderPage';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-// Role-based navigation items
+// ===== NAVIGATION CONFIGURATION (Lines 159-237) =====
+// Role-based navigation items - Defines menu items for each user role
 const getNavItemsByRole = (role: string) => {
   const allNavItems = [
     {
@@ -117,7 +236,10 @@ const getNavItemsByRole = (role: string) => {
 
 
 
+// ===== MAIN APP COMPONENT (Lines 238-1701) =====
+// Main application component - Contains all state management and page rendering logic
 const App = () => {
+  // ===== AUTHENTICATION STATE (Lines 241-252) =====
   // User management state (needed for authentication)
   const [users, setUsers] = useState(MOCK_USERS);
   
@@ -134,11 +256,14 @@ const App = () => {
 
   } = useAuth(users);
   
+  // ===== NAVIGATION STATE (Lines 253-257) =====
   // Navigation state
   const [activePage, setActivePage] = useState('Dashboard');
+  // ===== MODAL STATE (Lines 258-260) =====
   // Modal state for each action (except analytics)
   const [modal, setModal] = useState<null | 'issueGoods' | 'logWaste' | 'reconcile'>(null);
   
+  // ===== INVENTORY STATE (Lines 261-272) =====
   // Inventory state
   const [inventoryItems, setInventoryItems] = useState([
     { item: 'Tilapia', category: 'Fish', unit: 'kg', stock: '5' },
@@ -151,6 +276,7 @@ const App = () => {
     { item: 'Salt', category: 'Condiment', unit: 'kg', stock: '20' },
   ]);
 
+  // ===== ANALYTICS STATE (Lines 273-283) =====
   // Add state for week selection
   const [weekStart, setWeekStart] = useState(() => {
     const today = new Date();
@@ -164,6 +290,7 @@ const App = () => {
   // Generate mock data for the selected week
   const analyticsDataWeek = generateAnalyticsDataWeek(weekStart);
 
+  // ===== RECIPES STATE (Lines 284-295) =====
   // Recipes state
   const [recipes, setRecipes] = useState([
     { id: '1', name: 'Jollof Rice', portionSize: '1 plate', ingredients: [ { name: 'Rice', quantity: '0.2', unit: 'kg' }, { name: 'Tomatoes', quantity: '0.1', unit: 'kg' }, { name: 'Oil', quantity: '0.02', unit: 'L' } ] },
@@ -178,6 +305,7 @@ const App = () => {
   const [showRecipeModal, setShowRecipeModal] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
 
+  // ===== ISSUE GOODS STATE (Lines 296-304) =====
   // Issue Goods state
   const [issueRecipeId, setIssueRecipeId] = useState<string>('');
   const [issueQuantity, setIssueQuantity] = useState<number>(1);
@@ -186,6 +314,7 @@ const App = () => {
   const [customRecipeName, setCustomRecipeName] = useState<string>('');
   const [useCustomRecipe, setUseCustomRecipe] = useState<boolean>(false);
 
+  // ===== INVENTORY MANAGEMENT STATE (Lines 305-312) =====
   // Add these state hooks at the top of App component, after inventoryItems state:
   const [issueItemName, setIssueItemName] = useState('');
   const [showInventoryModal, setShowInventoryModal] = useState(false);
@@ -193,6 +322,7 @@ const App = () => {
   const [inventoryForm, setInventoryForm] = useState({ item: '', category: '', unit: '', stock: '' });
   const [inventoryFormError, setInventoryFormError] = useState('');
 
+  // ===== GOODS ISSUANCE STATE (Lines 313-325) =====
   // Add these state hooks at the top of App component, after inventoryItems state:
   const [showGoodsIssuanceModal, setShowGoodsIssuanceModal] = useState(false);
   const [goodsIssuanceForm, setGoodsIssuanceForm] = useState({ date: '', department: '', item: '', issued: '' });
@@ -210,6 +340,7 @@ const App = () => {
     { date: new Date().toISOString().slice(0, 10), department: 'Kitchen', item: 'Flatbread', issued: 7 },
   ]);
 
+  // ===== DAILY USAGE STATE (Lines 326-330) =====
   // Add these state hooks at the top of App component, after inventoryItems state:
   const [showDailyUsageModal, setShowDailyUsageModal] = useState(false);
   const [dailyUsageForm, setDailyUsageForm] = useState({ item: '', expected: '', diff: '' });
@@ -236,6 +367,7 @@ const App = () => {
   // Add after orderNotifications state
   const [restockRequests, setRestockRequests] = useState<any[]>([]);
 
+  // ===== RESTOCK MANAGEMENT HANDLERS (Lines 370-395) =====
   const handleRequestRestock = (item: any) => {
     const existing = restockRequests.find(r => r.item === item.item && r.status === 'requested');
     if (existing) return; // Prevent duplicate requests for same item
@@ -258,12 +390,14 @@ const App = () => {
     setRestockRequests(prev => prev.map(r => r.id === id ? { ...r, status } : r));
   };
 
+  // ===== USER MANAGEMENT STATE (Lines 396-401) =====
   // User management state
   const [showUserModal, setShowUserModal] = useState(false);
   const [editingUser, setEditingUser] = useState<any>(null);
   const [userForm, setUserForm] = useState({ name: '', username: '', password: '', role: '' });
   const [userFormError, setUserFormError] = useState('');
 
+  // ===== HELPER FUNCTIONS (Lines 402-430) =====
   // Helper to get low stock items (e.g., stock < 10, adjust as needed)
   const lowStockItems = inventoryItems.filter(item => {
     const num = parseFloat(item.stock);
@@ -302,6 +436,7 @@ const App = () => {
     return !inv || invQty < ing.total;
   });
 
+  // ===== ISSUE GOODS HANDLER (Lines 431-515) =====
   // Handler: Issue Goods
   const handleIssueGoods = () => {
     setIssueError('');
@@ -382,6 +517,7 @@ const App = () => {
   };
 
   // Handlers for each button
+  // ===== RECIPE MANAGEMENT HANDLERS (Lines 516-559) =====
   const handleAddRecipe = () => {
     setEditingRecipe({ id: '', name: '', portionSize: '', ingredients: [{ name: '', quantity: '', unit: '' }] });
     setShowRecipeModal(true);
@@ -426,6 +562,7 @@ const App = () => {
   });
   const [wasteReasons, setWasteReasons] = useState<string[]>(['Spoilage', 'Overcooked', 'Expired', 'Accident', 'Other']);
   const [newReason, setNewReason] = useState('');
+  // ===== WASTE MANAGEMENT HANDLERS (Lines 560-638) =====
   const addReason = () => {
     if (newReason && !wasteReasons.includes(newReason)) {
       setWasteReasons([...wasteReasons, newReason]);
@@ -541,6 +678,7 @@ const App = () => {
   const [reconcileError, setReconcileError] = useState('');
 
   // Handler for physical count input
+  // ===== RECONCILE MANAGEMENT HANDLERS (Lines 675-722) =====
   const handleReconcileInput = (idx: number, value: string) => {
     setReconcileRows(rows => rows.map((row, i) =>
       i === idx ? {
@@ -611,6 +749,7 @@ const App = () => {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   // Handler: Update settings field
+  // ===== SETTINGS MANAGEMENT HANDLERS (Lines 745-780) =====
   const handleSettingsChange = (field: string, value: string) => {
     setSettings(s => ({ ...s, [field]: value }));
   };
@@ -692,6 +831,7 @@ const App = () => {
   };
 
   // Notification handlers
+  // ===== NOTIFICATION MANAGEMENT HANDLERS (Lines 826-892) =====
   const handleAcknowledgeNotification = (notificationId: string) => {
     setOrderNotifications(prev => 
       prev.map(notification => 
@@ -759,6 +899,7 @@ const App = () => {
   // Login form state
   const [loginForm, setLoginForm] = useState({ username: '', password: '' });
 
+  // ===== LOGIN HANDLER (Lines 893-899) =====
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleLogin(loginForm.username, loginForm.password);
@@ -766,6 +907,7 @@ const App = () => {
   };
 
   // Add these handlers in App component:
+  // ===== INVENTORY MANAGEMENT HANDLERS (Lines 900-931) =====
   const handleAddInventory = () => {
     setEditingInventoryItem(null);
     setInventoryForm({ item: '', category: '', unit: '', stock: '' });
@@ -798,6 +940,7 @@ const App = () => {
 
 
   // Add these handlers in App component:
+  // ===== GOODS ISSUANCE HANDLERS (Lines 932-970) =====
   const handleAddGoodsIssuance = () => {
     setGoodsIssuanceForm({ date: new Date().toISOString().slice(0, 10), department: '', item: '', issued: '' });
     setGoodsIssuanceFormError('');
@@ -837,6 +980,7 @@ const App = () => {
   };
 
   // Add these handlers in App component:
+  // ===== DAILY USAGE HANDLERS (Lines 971-995) =====
   const handleAddDailyUsage = () => {
     setDailyUsageForm({ item: '', expected: '', diff: '' });
     setDailyUsageFormError('');
@@ -862,6 +1006,7 @@ const App = () => {
   const [uploadedLogo, setUploadedLogo] = useState<string | null>(null);
 
   // 2. Add handler for file upload
+  // ===== LOGO UPLOAD HANDLER (Lines 996-1008) =====
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -875,6 +1020,7 @@ const App = () => {
   };
 
   // User management handlers
+  // ===== USER MANAGEMENT HANDLERS (Lines 1009-1040) =====
   const handleAddUser = () => {
     setEditingUser(null);
     setUserForm({ name: '', username: '', password: '', role: '' });
@@ -935,6 +1081,7 @@ const App = () => {
 
 
 
+  // ===== MAIN RENDER LOGIC (Lines 1075-1729) =====
   // Login page component
   if (isLoading && currentUser) return <Preloader name={currentUser.name.split(' ')[0]} preloaderStep={preloaderStep} setPreloaderStep={setPreloaderStep} />;
   if (!isAuthenticated) {

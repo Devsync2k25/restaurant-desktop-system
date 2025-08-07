@@ -16,7 +16,16 @@ function createWindow() {
     },
   });
 
-  win.loadURL('http://localhost:5173'); // Vite dev server
+  const isDev = !app.isPackaged;
+
+  if (isDev) {
+    //  Load Vite dev server during development
+    win.loadURL('http://localhost:5173');
+    win.webContents.openDevTools(); // Optional: show DevTools in dev mode
+  } else {
+    //  Load the built index.html in production
+    win.loadFile(path.join(__dirname, 'dist/index.html'));
+  }
 }
 
 app.whenReady().then(() => {
@@ -29,4 +38,4 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
-}); 
+});

@@ -1,73 +1,107 @@
-# Restaurant Desktop System
+# 🍽️ Restaurant Desktop System
 
 A comprehensive restaurant management system built with React, TypeScript, and Electron.
 
-## Quick Start
+## 🚀 Quick Start
 
-### Option 1: One-Click Start (Windows)
-Double-click `start-app.bat` to start both the development server and Electron app automatically.
+### Prerequisites
+- **Node.js** (Download from https://nodejs.org/)
+- **npm** (comes with Node.js)
 
-### Option 2: Manual Start
-1. **Install dependencies:**
+### Standard Installation & Run
+
+1. **Clone or download** this project
+2. **Open terminal/command prompt** in the project folder
+3. **Install dependencies:**
    ```bash
-   npm run install-deps
+   cd frontend
+   npm install
    ```
+4. **Run the application:**
 
-2. **Start the app:**
-   ```bash
-   npm start
-   ```
-
-### Option 3: Separate Commands
-1. **Start development server:**
+   **Web Version (Recommended):**
    ```bash
    npm run dev
    ```
+   Then open: http://localhost:5173
 
-2. **In a new terminal, start Electron:**
+   **Desktop Version:**
    ```bash
    npm run electron
    ```
 
-## Available Scripts
+   **Both (Web + Desktop):**
+   ```bash
+   npm run dev
+   # In another terminal:
+   npm run electron
+   ```
 
-- `npm start` - Start both dev server and Electron app
-- `npm run dev` - Start development server only
-- `npm run electron` - Start Electron app only
-- `npm run install-deps` - Install frontend dependencies
+## 🎯 Available Scripts
+
+- `npm run dev` - Start development server (web version)
 - `npm run build` - Build for production
+- `npm run electron` - Start desktop app
 - `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
 
-## Features
+## 🎉 What You Get
 
-- Inventory Management
-- Recipe Management
-- User Management
-- Analytics & Reports
-- Role-based Access Control
-- Real-time Notifications
+- **Web Interface**: Modern React app with Tailwind CSS
+- **Desktop App**: Electron-based desktop application
+- **Multiple User Roles**: Bartender, Chef, Manager, Director, etc.
+- **Real-time Features**: Live updates and notifications
+- **Responsive Design**: Works on desktop and mobile
 
-## System Requirements
+## 🛠️ Troubleshooting
 
-- Node.js 16+
-- npm 8+
-- Windows 10/11 (for .bat file)
+### "npm install failed"
+- Check internet connection
+- Try: `npm cache clean --force`
+- Delete `node_modules` folder and try again
 
-## Troubleshooting
+### "Port 5173 is already in use"
+- Close other applications using port 5173
+- Or restart your computer
 
-If you see a white screen in Electron:
-1. Make sure the development server is running (`npm run dev`)
-2. Check that `http://localhost:5173` is accessible in your browser
-3. Restart Electron (`npm run electron`)
+### "Module not found"
+- Make sure you're in the `frontend` directory
+- Run `npm install` again
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 restaurant-desktop-system/
-├── frontend/          # React + Electron app
-├── backend/           # Backend API
-├── database/          # Database files
-├── docs/             # Documentation
-├── start-app.bat     # Windows startup script
-└── package.json      # Root package.json with scripts
+├── frontend/           # React application
+│   ├── src/
+│   │   ├── components/ # React components
+│   │   ├── pages/      # Page components
+│   │   ├── types/      # TypeScript types
+│   │   └── utils/      # Utility functions
+│   ├── package.json    # Dependencies
+│   └── main.js         # Electron entry point
+├── backend/            # Backend services
+├── database/           # Database schema
+└── docs/              # Documentation
 ```
+
+## 🎯 Success Indicators
+
+✅ You see "Local: http://localhost:5173" in terminal  
+✅ Browser opens to the restaurant management interface  
+✅ No red error messages in console  
+✅ You can navigate between different user roles
+
+## 💡 Pro Tips
+
+- **First time**: Run `npm install` to install dependencies
+- **Development**: Use `npm run dev` for hot reloading
+- **Production**: Use `npm run build` then `npm run preview`
+- **Desktop**: Use `npm run electron` for native app experience
+
+## 📞 Need Help?
+
+1. Check the terminal output for error messages
+2. Make sure you're in the `frontend` directory
+3. Verify Node.js is installed: `node --version`
+4. Try running as Administrator if on Windows

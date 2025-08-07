@@ -1,0 +1,16 @@
+* [33m39b805c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfirstfrontend[m[33m)[m Add comprehensive section comments to App.tsx for better code navigation
+[31m|[m *   [33mb0da031[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge pull request #28 from Devsync2k25/firstfrontend
+[31m|[m [32m|[m[33m\[m  
+[31m|[m [32m|[m *   [33m8eae190[m[33m ([m[1;31morigin/firstfrontend[m[33m)[m Merge remote changes
+[31m|[m [32m|[m [34m|[m[31m\[m  
+[31m|[m [32m|[m[31m_[m[34m|[m[31m/[m  
+[31m|[m[31m/[m[32m|[m [34m|[m   
+* [32m|[m [34m|[m [33ma107b99[m Remove logo upload section from Settings page
+* [32m|[m [34m|[m [33md2dabf5[m Update frontend with latest changes from coral-gardens and add root dependencies
+* [32m|[m [34m|[m [33m77f4900[m Add easy-to-use scripts and startup files for restaurant desktop system
+[35m|[m [32m|[m * [33mda6f44b[m version 1
+[35m|[m * [35m|[m   [33m94bfdcd[m Merge pull request #27 from Devsync2k25/backendconnection
+[35m|[m [36m|[m[1;31m\[m [35m\[m  
+[35m|[m [36m|[m * [35m|[m [33me6374db[m[33m ([m[1;31morigin/backendconnection[m[33m)[m Back end has been connected to databse and it read data now
+[35m|[m [36m|[m[36m/[m [35m/[m  
+[35m|[m * [35m|[m [33m43d3979[m Update main.js

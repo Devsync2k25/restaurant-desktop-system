@@ -44,6 +44,20 @@
  */
 
 // Recipe names and colors
+export const recipeNames = [
+  'Jollof Rice',
+  'Banku', 
+  'Fufu',
+  'Waakye',
+  'Tuo Zaafi',
+  'Kenkey',
+  'Yam',
+  'Plantain',
+  'Rice',
+  'Beans',
+  'Fried Rice'
+];
+
 export const recipeColors = [
   'rgb(59, 130, 246)', // blue (Jollof Rice)
   'rgb(16, 185, 129)', // green (Banku)

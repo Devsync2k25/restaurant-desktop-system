@@ -3,12 +3,12 @@ const db = mysql.createConnection({
     host:'localhost',
     user: 'root',
     password:'Infinity@123',
-    database:'resturant_db'
+    database:'restaurant_db'
 });
 db.connect((err)=> {
     
     if (err){
-        console.error('Databse connection failed:',err.message);
+        console.error('Database connection failed:',err.message);
     }
     else {
         console.log('Connected to MySQL database');

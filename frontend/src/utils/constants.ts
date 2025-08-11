@@ -84,15 +84,4 @@ export const ROLES = {
   BARTENDER: 'Bartender'          // Order from stores
 };
 
-// Mock users for demonstration
-// TODO: Replace with database integration
-export const MOCK_USERS = [
-  { username: 'director', password: 'director123', role: ROLES.DIRECTOR, name: 'John Director' },
-  { username: 'manager', password: 'manager123', role: ROLES.MANAGER, name: 'Sarah Manager' },
-  { username: 'mis', password: 'mis123', role: ROLES.MIS_OFFICER, name: 'Mike MIS Officer' },
-  { username: 'warehouse', password: 'warehouse123', role: ROLES.WAREHOUSE_MANAGER, name: 'Lisa Warehouse Manager' },
-  { username: 'stores', password: 'stores123', role: ROLES.STORES_MANAGER, name: 'Tom Stores Manager' },
-  { username: 'inventory', password: 'inventory123', role: ROLES.INVENTORY_PERSONNEL, name: 'Anna Inventory Personnel' },
-  { username: 'chef', password: 'chef123', role: ROLES.KITCHEN_CHEF, name: 'Yaw Asumang Chef' },
-  { username: 'bartender', password: 'bartender123', role: ROLES.BARTENDER, name: 'Alex Bartender' }
-]; 
+// Note: MOCK_USERS removed - now fetching real user data from backend API 

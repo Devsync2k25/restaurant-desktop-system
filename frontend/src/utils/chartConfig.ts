@@ -1,13 +1,19 @@
 import { recipeNames, recipeColors } from './constants';
 import { getWeekDates } from './helpers';
 
-// Generate analytics data for 30 days
-export function generateAnalyticsData() {
+// Generate analytics data for 30 days - now expects real data from backend
+export function generateAnalyticsData(realData?: any) {
+  if (realData) {
+    // Use real data from backend if provided
+    return realData;
+  }
+  
+  // Fallback to empty data structure
   return {
     labels: Array.from({ length: 30 }, (_, i) => `Day ${i + 1}`),
     datasets: recipeNames.map((name, idx) => ({
       label: name,
-      data: Array.from({ length: 30 }, () => Math.floor(Math.random() * 100) + 20),
+      data: Array.from({ length: 30 }, () => 0), // Initialize with zeros instead of random data
       backgroundColor: recipeColors[idx],
       borderColor: recipeColors[idx],
       borderWidth: 1,
@@ -15,14 +21,20 @@ export function generateAnalyticsData() {
   };
 }
 
-// Generate analytics data for a specific week
-export function generateAnalyticsDataWeek(weekStart: string) {
+// Generate analytics data for a specific week - now expects real data from backend
+export function generateAnalyticsDataWeek(weekStart: string, realData?: any) {
+  if (realData) {
+    // Use real data from backend if provided
+    return realData;
+  }
+  
   const weekDates = getWeekDates(weekStart);
+  // Fallback to empty data structure
   return {
     labels: weekDates,
     datasets: recipeNames.map((name, idx) => ({
       label: name,
-      data: weekDates.map(() => Math.floor(Math.random() * 100) + 20),
+      data: weekDates.map(() => 0), // Initialize with zeros instead of random data
       backgroundColor: recipeColors[idx],
       borderColor: recipeColors[idx],
       borderWidth: 1,

@@ -116,7 +116,7 @@
  * - Implement search and filtering on backend
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -139,7 +139,7 @@ import LoginPage from './pages/LoginPage';
 import Preloader from './components/Preloader';
 import Sidebar from './components/Sidebar';
 import { alertIcons } from './components/AlertIcons';
-import { ROLES, MOCK_USERS } from './utils/constants';
+import { ROLES } from './utils/constants';
 import { downloadReport } from './utils/helpers';
 import { generateAnalyticsDataWeek, analyticsOptions } from './utils/chartConfig';
 import { useAuth } from './hooks/useAuth';
@@ -241,7 +241,7 @@ const getNavItemsByRole = (role: string) => {
 const App = () => {
   // ===== AUTHENTICATION STATE (Lines 241-252) =====
   // User management state (needed for authentication)
-  const [users, setUsers] = useState(MOCK_USERS);
+  const [users, setUsers] = useState<any[]>([]);
   
   // Authentication state
   const {
@@ -254,7 +254,7 @@ const App = () => {
     handleLogin,
     handleLogout,
 
-  } = useAuth(users);
+  } = useAuth();
   
   // ===== NAVIGATION STATE (Lines 253-257) =====
   // Navigation state
@@ -265,16 +265,7 @@ const App = () => {
   
   // ===== INVENTORY STATE (Lines 261-272) =====
   // Inventory state
-  const [inventoryItems, setInventoryItems] = useState([
-    { item: 'Tilapia', category: 'Fish', unit: 'kg', stock: '5' },
-    { item: 'Eggs', category: 'Poultry', unit: 'pcs', stock: '8' },
-    { item: 'Tomatoes', category: 'Vegetable', unit: 'kg', stock: '25' },
-    { item: 'Vodka', category: 'Beverage', unit: 'L', stock: '2' },
-    { item: 'Rice', category: 'Grain', unit: 'kg', stock: '50' },
-    { item: 'Chicken', category: 'Poultry', unit: 'kg', stock: '12' },
-    { item: 'Oil', category: 'Condiment', unit: 'L', stock: '7' },
-    { item: 'Salt', category: 'Condiment', unit: 'kg', stock: '20' },
-  ]);
+  const [inventoryItems, setInventoryItems] = useState<any[]>([]);
 
   // ===== ANALYTICS STATE (Lines 273-283) =====
   // Add state for week selection
@@ -291,17 +282,8 @@ const App = () => {
   const analyticsDataWeek = generateAnalyticsDataWeek(weekStart);
 
   // ===== RECIPES STATE (Lines 284-295) =====
-  // Recipes state
-  const [recipes, setRecipes] = useState([
-    { id: '1', name: 'Jollof Rice', portionSize: '1 plate', ingredients: [ { name: 'Rice', quantity: '0.2', unit: 'kg' }, { name: 'Tomatoes', quantity: '0.1', unit: 'kg' }, { name: 'Oil', quantity: '0.02', unit: 'L' } ] },
-    { id: '2', name: 'Grilled Chicken', portionSize: '1 piece', ingredients: [ { name: 'Chicken', quantity: '0.25', unit: 'kg' }, { name: 'Salt', quantity: '0.01', unit: 'kg' }, { name: 'Oil', quantity: '0.01', unit: 'L' } ] },
-    { id: '3', name: 'Shawarma', portionSize: '1 wrap', ingredients: [ { name: 'Chicken', quantity: '0.15', unit: 'kg' }, { name: 'Oil', quantity: '0.01', unit: 'L' }, { name: 'Salt', quantity: '0.005', unit: 'kg' } ] },
-    { id: '4', name: 'Fried Rice', portionSize: '1 plate', ingredients: [ { name: 'Rice', quantity: '0.2', unit: 'kg' }, { name: 'Eggs', quantity: '1', unit: 'pcs' }, { name: 'Oil', quantity: '0.02', unit: 'L' } ] },
-    { id: '5', name: 'Beef Kebab', portionSize: '1 stick', ingredients: [ { name: 'Beef', quantity: '0.1', unit: 'kg' }, { name: 'Salt', quantity: '0.002', unit: 'kg' } ] },
-    { id: '6', name: 'Vodka Tonic', portionSize: '1 glass', ingredients: [ { name: 'Vodka', quantity: '0.05', unit: 'L' } ] },
-    { id: '7', name: 'Tomato Soup', portionSize: '1 bowl', ingredients: [ { name: 'Tomatoes', quantity: '0.15', unit: 'kg' }, { name: 'Salt', quantity: '0.003', unit: 'kg' } ] },
-    { id: '8', name: 'Egg Omelette', portionSize: '1 serving', ingredients: [ { name: 'Eggs', quantity: '2', unit: 'pcs' }, { name: 'Salt', quantity: '0.002', unit: 'kg' }, { name: 'Oil', quantity: '0.01', unit: 'L' } ] },
-  ]);
+  // Recipes state - Remove hardcoded data
+  const [recipes, setRecipes] = useState<any[]>([]);
   const [showRecipeModal, setShowRecipeModal] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
 
@@ -327,36 +309,16 @@ const App = () => {
   const [showGoodsIssuanceModal, setShowGoodsIssuanceModal] = useState(false);
   const [goodsIssuanceForm, setGoodsIssuanceForm] = useState({ date: '', department: '', item: '', issued: '' });
   const [goodsIssuanceFormError, setGoodsIssuanceFormError] = useState('');
-  const [goodsIssuance, setGoodsIssuance] = useState([
-    { date: new Date().toISOString().slice(0, 10), department: 'Kitchen', item: 'Tilapia', issued: 2 },
-    { date: new Date().toISOString().slice(0, 10), department: 'Kitchen', item: 'Eggs', issued: 6 },
-    { date: '04/23/2024', department: 'Kitchen', item: 'Tomatoes', issued: 4 },
-    { date: new Date().toISOString().slice(0, 10), department: 'Bar', item: 'Vodka', issued: 1 },
-    { date: '04/22/2024', department: 'Kitchen', item: 'Rice', issued: 10 },
-    { date: new Date().toISOString().slice(0, 10), department: 'Kitchen', item: 'Chicken', issued: 3 },
-    { date: new Date().toISOString().slice(0, 10), department: 'Kitchen', item: 'Oil', issued: 2 },
-    { date: new Date().toISOString().slice(0, 10), department: 'Kitchen', item: 'Salt', issued: 1 },
-    { date: new Date().toISOString().slice(0, 10), department: 'Kitchen', item: 'Beef', issued: 5 },
-    { date: new Date().toISOString().slice(0, 10), department: 'Kitchen', item: 'Flatbread', issued: 7 },
-  ]);
+  // Remove hardcoded data - replace with empty array
+  const [goodsIssuance, setGoodsIssuance] = useState<any[]>([]);
 
   // ===== DAILY USAGE STATE (Lines 326-330) =====
   // Add these state hooks at the top of App component, after inventoryItems state:
   const [showDailyUsageModal, setShowDailyUsageModal] = useState(false);
   const [dailyUsageForm, setDailyUsageForm] = useState({ item: '', expected: '', diff: '' });
   const [dailyUsageFormError, setDailyUsageFormError] = useState('');
-  const [dailyUsage, setDailyUsage] = useState([
-    { item: 'Eggs', expected: '40 g', diff: '8.3 g' },
-    { item: 'Tomatoes', expected: '40 g', diff: '4.3 g' },
-    { item: 'Vodka', expected: '40 g', diff: '5.4 g' },
-    { item: 'Rice', expected: '40 g', diff: '2.1 g' },
-    { item: 'Chicken', expected: '40 g', diff: '3.7 g' },
-    { item: 'Oil', expected: '40 g', diff: '1.2 g' },
-    { item: 'Salt', expected: '40 g', diff: '0.8 g' },
-    { item: 'Beef', expected: '40 g', diff: '6.5 g' },
-    { item: 'Flatbread', expected: '40 g', diff: '2.9 g' },
-    { item: 'Spices', expected: '40 g', diff: '0.5 g' },
-  ]);
+  // Remove hardcoded data - replace with empty array
+  const [dailyUsage, setDailyUsage] = useState<any[]>([]);
 
   // Add at the top of App component, after other state hooks:
   const [alertModal, setAlertModal] = useState<null | 'lowStock' | 'issued' | 'waste'>(null);
@@ -366,6 +328,110 @@ const App = () => {
 
   // Add after orderNotifications state
   const [restockRequests, setRestockRequests] = useState<any[]>([]);
+
+  // ===== API DATA FETCHING (Lines 370-395) =====
+  useEffect(() => {
+    // Fetch inventory items from backend
+    const fetchInventoryItems = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/inventory');
+        if (response.ok) {
+          const data = await response.json();
+          setInventoryItems(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch inventory items:', error);
+      }
+    };
+
+    // Fetch recipes from backend
+    const fetchRecipes = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/recipes');
+        if (response.ok) {
+          const data = await response.json();
+          setRecipes(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch recipes:', error);
+      }
+    };
+
+    // Fetch users from backend
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/users');
+        if (response.ok) {
+          const data = await response.json();
+          setUsers(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch users:', error);
+      }
+    };
+
+    // Fetch goods issuance from backend
+    const fetchGoodsIssuance = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/goods-issuance');
+        if (response.ok) {
+          const data = await response.json();
+          setGoodsIssuance(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch goods issuance:', error);
+      }
+    };
+
+    // Fetch daily usage from backend
+    const fetchDailyUsage = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/daily-usage');
+        if (response.ok) {
+          const data = await response.json();
+          setDailyUsage(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch daily usage:', error);
+      }
+    };
+
+    // Fetch waste log from backend
+    const fetchWasteLog = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/waste-log');
+        if (response.ok) {
+          const data = await response.json();
+          setWasteLog(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch waste log:', error);
+      }
+    };
+
+    // Fetch analytics data from backend
+    const fetchAnalyticsData = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/analytics');
+        if (response.ok) {
+          const data = await response.json();
+          // Update analytics data with real data from backend
+          // This would replace the hardcoded random data
+        }
+      } catch (error) {
+        console.error('Failed to fetch analytics data:', error);
+      }
+    };
+
+    // Fetch data when component mounts
+    fetchInventoryItems();
+    fetchRecipes();
+    fetchUsers();
+    fetchGoodsIssuance();
+    fetchDailyUsage();
+    fetchWasteLog();
+    fetchAnalyticsData();
+  }, []);
 
   // ===== RESTOCK MANAGEMENT HANDLERS (Lines 370-395) =====
   const handleRequestRestock = (item: any) => {
@@ -547,11 +613,8 @@ const App = () => {
   };
 
   // Add after other state declarations in App component
-  const [wasteLog, setWasteLog] = useState([
-    { date: new Date().toISOString().slice(0, 10), item: 'Eggs', quantity: 2, unit: 'pcs', reason: 'Spoilage', staff: 'John' },
-    { date: new Date().toISOString().slice(0, 10), item: 'Tilapia', quantity: 1, unit: 'kg', reason: 'Overcooked', staff: 'Mary' },
-    { date: '04/22/2024', item: 'Tomatoes', quantity: 3, unit: 'kg', reason: 'Expired', staff: 'Jane' },
-  ]);
+  // Remove hardcoded data - replace with empty array
+  const [wasteLog, setWasteLog] = useState<any[]>([]);
   const [wasteForm, setWasteForm] = useState({
     date: new Date().toISOString().slice(0, 10),
     item: '',
@@ -1116,7 +1179,7 @@ const App = () => {
               currentUser={currentUser}
               inventoryItems={inventoryItems}
               recipes={recipes}
-              MOCK_USERS={MOCK_USERS}
+              users={users}
               lowStockItems={lowStockItems}
               todaysIssued={todaysIssued}
               orderNotifications={orderNotifications}
@@ -1128,7 +1191,7 @@ const App = () => {
               currentUser={currentUser}
               inventoryItems={inventoryItems}
               recipes={recipes}
-              MOCK_USERS={MOCK_USERS}
+              users={users}
               lowStockItems={lowStockItems}
               orderNotifications={orderNotifications}
               restockRequests={restockRequests}
@@ -1283,7 +1346,6 @@ const App = () => {
           />
         ) : activePage === 'User Management' ? (
           <UserManagementPage
-            MOCK_USERS={MOCK_USERS}
             ROLES={ROLES}
             currentUser={currentUser}
             users={users}

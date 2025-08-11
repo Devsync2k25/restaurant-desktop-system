@@ -4,7 +4,7 @@
  * 
  * BACKEND DEVELOPERS - READ THIS SECTION:
  * ======================================
- * 
+ * N
  * CURRENT IMPLEMENTATION:
  * ======================
  * - Uses mock user data from constants.ts
@@ -60,31 +60,44 @@
 
 import { useState } from 'react';
 
-export const useAuth = (users: any[] = []) => {
+export const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [loginError, setLoginError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [preloaderStep, setPreloaderStep] = useState<'welcome' | 'subtitle' | 'done'>('welcome');
 
-  // TODO: Replace with API call to /api/login
-  const handleLogin = (username: string, password: string) => {
-    const user = users.find(u => u.username === username && u.password === password);
-    if (user) {
-      setCurrentUser(user);
-      setIsLoading(true); // Show preloader
-      setPreloaderStep('welcome');
-      setTimeout(() => {
-        setIsAuthenticated(true);
-        setLoginError('');
-      }, 10000); // Wait for preloader animation (10 seconds)
-      setTimeout(() => setIsLoading(false), 11000); // Hide preloader after animation
-    } else {
-      setLoginError('Invalid username or password');
+  const handleLogin = async (username: string, password: string) => {
+    try {
+      setIsLoading(true);
+      setLoginError('');
+      
+      const response = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentUser(data.user);
+        setPreloaderStep('welcome');
+        setTimeout(() => {
+          setIsAuthenticated(true);
+          setLoginError('');
+        }, 10000); // Wait for preloader animation (10 seconds)
+        setTimeout(() => setIsLoading(false), 11000); // Hide preloader after animation
+      } else {
+        const errorData = await response.json();
+        setLoginError(errorData.message);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      setLoginError('Network error. Please check your connection.');
+      setIsLoading(false);
     }
   };
 
-  // TODO: Replace with API call to /api/logout
   const handleLogout = () => {
     setIsAuthenticated(false);
     setCurrentUser(null);

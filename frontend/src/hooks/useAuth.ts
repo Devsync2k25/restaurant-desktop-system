@@ -4,7 +4,7 @@
  * 
  * BACKEND DEVELOPERS - READ THIS SECTION:
  * ======================================
- * N
+ * 
  * CURRENT IMPLEMENTATION:
  * ======================
  * - Uses mock user data from constants.ts
@@ -33,32 +33,10 @@
  *    - Validate user permissions on protected routes
  *    - Check role access for different features
  *    - Implement proper error handling
- * 
- * API INTEGRATION EXAMPLE:
- * =======================
- * const handleLogin = async (username: string, password: string) => {
- *   try {
- *     const response = await fetch('/api/login', {
- *       method: 'POST',
- *       headers: { 'Content-Type': 'application/json' },
- *       body: JSON.stringify({ username, password })
- *     });
- *     
- *     if (response.ok) {
- *       const data = await response.json();
- *       localStorage.setItem('token', data.token);
- *       setCurrentUser(data.user);
- *       setIsAuthenticated(true);
- *     } else {
- *       setLoginError('Invalid credentials');
- *     }
- *   } catch (error) {
- *     setLoginError('Network error');
- *   }
- * };
  */
 
 import { useState } from 'react';
+import { API_ENDPOINTS, apiRequest, handleApiResponse, handleApiError } from '../utils/api';
 
 export const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -66,34 +44,39 @@ export const useAuth = () => {
   const [loginError, setLoginError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [preloaderStep, setPreloaderStep] = useState<'welcome' | 'subtitle' | 'done'>('welcome');
+  const [shouldRedirect, setShouldRedirect] = useState(false);
 
   const handleLogin = async (username: string, password: string) => {
     try {
       setIsLoading(true);
       setLoginError('');
       
-      const response = await fetch('http://localhost:5000/api/login', {
+      const response = await apiRequest(API_ENDPOINTS.LOGIN, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
       });
       
-      if (response.ok) {
-        const data = await response.json();
+      const data = await handleApiResponse<any>(response);
+      console.log('Login response:', data); // Debug log
+      
+      // Check if login was successful and user data exists
+      if (data.message === 'Login successful' && data.user) {
         setCurrentUser(data.user);
         setPreloaderStep('welcome');
+        
+        // Quick transition to authenticated state
         setTimeout(() => {
           setIsAuthenticated(true);
           setLoginError('');
-        }, 10000); // Wait for preloader animation (10 seconds)
-        setTimeout(() => setIsLoading(false), 11000); // Hide preloader after animation
+          setIsLoading(false);
+          setShouldRedirect(true); // Signal that redirect should happen
+        }, 2000); // Reduced to 2 seconds for better UX
       } else {
-        const errorData = await response.json();
-        setLoginError(errorData.message);
-        setIsLoading(false);
+        throw new Error('Invalid login response format');
       }
     } catch (error) {
-      setLoginError('Network error. Please check your connection.');
+      console.error('Login error:', error); // Debug log
+      setLoginError(handleApiError(error));
       setIsLoading(false);
     }
   };
@@ -112,6 +95,8 @@ export const useAuth = () => {
     setPreloaderStep,
     handleLogin,
     handleLogout,
-    setLoginError
+    setLoginError,
+    shouldRedirect,
+    setShouldRedirect
   };
 }; 

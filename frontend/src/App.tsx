@@ -253,7 +253,8 @@ const App = () => {
     setPreloaderStep,
     handleLogin,
     handleLogout,
-
+    shouldRedirect,
+    setShouldRedirect
   } = useAuth();
   
   // ===== NAVIGATION STATE (Lines 253-257) =====
@@ -328,6 +329,14 @@ const App = () => {
 
   // Add after orderNotifications state
   const [restockRequests, setRestockRequests] = useState<any[]>([]);
+
+  // ===== AUTHENTICATION REDIRECT HANDLER =====
+  useEffect(() => {
+    if (shouldRedirect && isAuthenticated) {
+      setActivePage('Dashboard');
+      setShouldRedirect(false); // Reset the flag
+    }
+  }, [shouldRedirect, isAuthenticated]);
 
   // ===== API DATA FETCHING (Lines 370-395) =====
   useEffect(() => {
@@ -966,7 +975,7 @@ const App = () => {
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleLogin(loginForm.username, loginForm.password);
-    setActivePage('Dashboard');
+    // Don't set active page here - let the auth hook handle it
   };
 
   // Add these handlers in App component:
@@ -1146,6 +1155,15 @@ const App = () => {
 
   // ===== MAIN RENDER LOGIC (Lines 1075-1729) =====
   // Login page component
+  
+  // DEBUG: Log authentication state
+  console.log('=== DEBUG AUTH STATE ===');
+  console.log('isAuthenticated:', isAuthenticated);
+  console.log('currentUser:', currentUser);
+  console.log('isLoading:', isLoading);
+  console.log('shouldRedirect:', shouldRedirect);
+  console.log('========================');
+  
   if (isLoading && currentUser) return <Preloader name={currentUser.name.split(' ')[0]} preloaderStep={preloaderStep} setPreloaderStep={setPreloaderStep} />;
   if (!isAuthenticated) {
     return (
@@ -1287,6 +1305,29 @@ const App = () => {
             handleRecipeModalClose={handleRecipeModalClose}
             handleRecipeModalSave={handleRecipeModalSave}
           />
+        ) : activePage === 'Inventory' ? (
+          <InventoryPage
+            currentUser={currentUser}
+            ROLES={ROLES}
+            inventoryItems={inventoryItems}
+            recipes={recipes}
+            wasteLog={wasteLog}
+            goodsIssuance={goodsIssuance}
+            dailyUsage={dailyUsage}
+            lowStockItems={lowStockItems}
+            todaysIssued={todaysIssued}
+            alertIcons={alertIcons}
+            setAlertModal={setAlertModal}
+            handleIssueGoods={handleIssueGoods}
+            handleAddInventory={handleAddInventory}
+            handleEditInventory={handleEditInventory}
+            handleAddRecipe={handleAddRecipe}
+            handleEditRecipe={handleEditRecipe}
+            handleAddGoodsIssuance={handleAddGoodsIssuance}
+            handleAddDailyUsage={handleAddDailyUsage}
+            restockRequests={restockRequests}
+            handleRequestRestock={handleRequestRestock}
+          />
         ) : activePage === 'Issue Goods' ? (
           <IssueGoodsPage
             currentUser={currentUser}
@@ -1380,30 +1421,8 @@ const App = () => {
             uploadedLogo={uploadedLogo}
             handleLogoUpload={handleLogoUpload}
           />
-                  ) : (
-            <InventoryPage
-              currentUser={currentUser}
-              ROLES={ROLES}
-              inventoryItems={inventoryItems}
-              recipes={recipes}
-              wasteLog={wasteLog}
-              goodsIssuance={goodsIssuance}
-              dailyUsage={dailyUsage}
-              lowStockItems={lowStockItems}
-              todaysIssued={todaysIssued}
-              alertIcons={alertIcons}
-              setAlertModal={setAlertModal}
-              handleIssueGoods={handleIssueGoods}
-              handleAddInventory={handleAddInventory}
-              handleEditInventory={handleEditInventory}
-              handleAddRecipe={handleAddRecipe}
-              handleEditRecipe={handleEditRecipe}
-              handleAddGoodsIssuance={handleAddGoodsIssuance}
-              handleAddDailyUsage={handleAddDailyUsage}
-              restockRequests={restockRequests}
-              handleRequestRestock={handleRequestRestock}
-            />
-        )}
+        ) : null
+        }
         {/* Modals (placeholders) for non-analytics actions */}
         {modal === 'issueGoods' && (
           <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50" onClick={e => { if (e.target === e.currentTarget) setShowInventoryModal(false); }}>

@@ -1,5 +1,0 @@
-[33m39b805c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfirstfrontend[m[33m)[m Add comprehensive section comments to App.tsx for better code navigation
-[33ma107b99[m Remove logo upload section from Settings page
-[33md2dabf5[m Update frontend with latest changes from coral-gardens and add root dependencies
-[33m77f4900[m Add easy-to-use scripts and startup files for restaurant desktop system
-[33m5495d2a[m[33m ([m[1;32mmy-feature-branch[m[33m, [m[1;32mmain[m[33m)[m Add React app inside frontend folder
